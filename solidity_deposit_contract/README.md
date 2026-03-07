@@ -19,6 +19,18 @@ relicensed to CC0-1.0. Afterward, this contract has been ported back to from
 [`axic/eth2-deposit-contract`](https://github.com/axic/eth2-deposit-contract) to
 this repository and replaced the Vyper deposit contract.
 
+## Security Enhancements
+
+### Zero Address Protection
+
+Deposits using execution-layer (`0x01` prefix) withdrawal credentials that
+encode the zero address (`0x0000000000000000000000000000000000000000`) in
+bytes 12–31 are rejected. This prevents ETH from being irreversibly burned
+when withdrawals are processed on-chain.
+
+See [SECURITY.md](../SECURITY.md) for more details on the zero address
+protection and authorized withdrawal addresses.
+
 ## Compiling solidity deposit contract
 
 In this directory run:
@@ -38,6 +50,9 @@ The following parameters were used to generate the bytecode for the
 ```sh
 solc --optimize --optimize-runs 5000000 --metadata-literal --bin deposit_contract.sol
 ```
+
+> **Note:** After modifying `deposit_contract.sol`, run `make compile_deposit_contract`
+> to regenerate `deposit_contract.json` so the ABI and bytecode remain in sync.
 
 ## Running web3 tests
 

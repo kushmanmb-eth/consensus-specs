@@ -16,6 +16,14 @@ SAMPLE_PUBKEY = b'\x11' * 48
 SAMPLE_WITHDRAWAL_CREDENTIALS = b'\x22' * 32
 SAMPLE_VALID_SIGNATURE = b'\x33' * 96
 
+# Execution-layer (0x01 prefix) withdrawal credentials with the zero address.
+# Bytes 0: 0x01 prefix; bytes 1-11: zero padding; bytes 12-31: zero address.
+ZERO_ADDRESS_WITHDRAWAL_CREDENTIALS = b'\x01' + b'\x00' * 31
+
+# Execution-layer (0x01 prefix) withdrawal credentials with a valid non-zero address.
+# Represents a withdrawal to 0x1111...1111 (20 bytes of 0x11).
+VALID_ETH1_WITHDRAWAL_CREDENTIALS = b'\x01' + b'\x00' * 11 + b'\x11' * 20
+
 
 @pytest.fixture
 def deposit_input(amount):
@@ -192,3 +200,49 @@ def test_deposit_tree(registration_contract, w3, assert_tx_failed):
         assert count == registration_contract.functions.get_deposit_count().call()
         root = hash_tree_root(List[DepositData, 2**32](*deposit_data_list))
         assert root == registration_contract.functions.get_deposit_root().call()
+
+
+def test_deposit_zero_address_withdrawal_rejected(registration_contract,
+                                                  w3,
+                                                  assert_tx_failed):
+    """
+    Deposits with execution-layer (0x01 prefix) withdrawal credentials that
+    encode the zero address (0x0000...0000) in bytes 12-31 must be rejected.
+    Allowing such deposits would cause withdrawn ETH to be permanently burned.
+    """
+    call = registration_contract.functions.deposit(
+        SAMPLE_PUBKEY,
+        ZERO_ADDRESS_WITHDRAWAL_CREDENTIALS,
+        SAMPLE_VALID_SIGNATURE,
+        hash_tree_root(
+            DepositData(
+                pubkey=SAMPLE_PUBKEY,
+                withdrawal_credentials=ZERO_ADDRESS_WITHDRAWAL_CREDENTIALS,
+                amount=FULL_DEPOSIT_AMOUNT,
+                signature=SAMPLE_VALID_SIGNATURE,
+            ),
+        )
+    )
+    assert_tx_failed(lambda: call.transact({"value": FULL_DEPOSIT_AMOUNT * eth_utils.denoms.gwei}))
+
+
+def test_deposit_valid_eth1_withdrawal_credentials(registration_contract,
+                                                   w3):
+    """
+    Deposits with execution-layer (0x01 prefix) withdrawal credentials that
+    encode a non-zero address must succeed.
+    """
+    call = registration_contract.functions.deposit(
+        SAMPLE_PUBKEY,
+        VALID_ETH1_WITHDRAWAL_CREDENTIALS,
+        SAMPLE_VALID_SIGNATURE,
+        hash_tree_root(
+            DepositData(
+                pubkey=SAMPLE_PUBKEY,
+                withdrawal_credentials=VALID_ETH1_WITHDRAWAL_CREDENTIALS,
+                amount=FULL_DEPOSIT_AMOUNT,
+                signature=SAMPLE_VALID_SIGNATURE,
+            ),
+        )
+    )
+    assert call.transact({"value": FULL_DEPOSIT_AMOUNT * eth_utils.denoms.gwei})
