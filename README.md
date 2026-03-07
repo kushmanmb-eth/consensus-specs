@@ -1,8 +1,8 @@
 # Ethereum Proof-of-Stake Consensus Specifications
 
 [![Join the chat at https://discord.gg/qGpsxSA](https://img.shields.io/badge/chat-on%20discord-blue.svg)](https://discord.gg/qGpsxSA)
-[![nightly-tests](https://github.com/ethereum/consensus-specs/actions/workflows/nightly-tests.yml/badge.svg?branch=master&event=schedule)](https://github.com/ethereum/consensus-specs/actions/workflows/nightly-tests.yml)
-[![nightly-reftests](https://github.com/ethereum/consensus-specs/actions/workflows/nightly-reftests.yml/badge.svg?branch=master&event=schedule)](https://github.com/ethereum/consensus-specs/actions/workflows/nightly-reftests.yml)
+[![nightly-tests](https://github.com/kushmanmb-eth/consensus-specs/actions/workflows/nightly-tests.yml/badge.svg?branch=master&event=schedule)](https://github.com/kushmanmb-eth/consensus-specs/actions/workflows/nightly-tests.yml)
+[![nightly-reftests](https://github.com/kushmanmb-eth/consensus-specs/actions/workflows/nightly-reftests.yml/badge.svg?branch=master&event=schedule)](https://github.com/kushmanmb-eth/consensus-specs/actions/workflows/nightly-reftests.yml)
 
 This repository hosts the current Ethereum
 [proof-of-stake](https://ethereum.org/en/developers/docs/consensus-mechanisms/pos/)
@@ -56,7 +56,7 @@ functionality can be found in the following repositories:
 Reference tests built from the executable Python specifications are available in
 the release assets for each release in this repository. There are also *nightly*
 reference tests which are built from the latest version of the specifications
-[here](https://github.com/ethereum/consensus-specs/actions/workflows/nightly-reftests.yml).
+[here](https://github.com/kushmanmb-eth/consensus-specs/actions/workflows/nightly-reftests.yml).
 
 ## Contributors
 
@@ -80,7 +80,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 Clone the repository with:
 
 ```bash
-git clone https://github.com/ethereum/consensus-specs.git
+git clone https://github.com/kushmanmb-eth/consensus-specs.git
 ```
 
 Switch to the directory:
