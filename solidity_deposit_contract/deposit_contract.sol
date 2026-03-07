@@ -109,6 +109,20 @@ contract DepositContract is IDepositContract, ERC165 {
         require(withdrawal_credentials.length == 32, "DepositContract: invalid withdrawal_credentials length");
         require(signature.length == 96, "DepositContract: invalid signature length");
 
+        // For execution-layer (0x01 prefix) withdrawal credentials, reject the zero address.
+        // Bytes 12-31 of the withdrawal_credentials encode the Ethereum withdrawal address.
+        // Allowing the zero address would result in ETH being permanently burned on withdrawal.
+        if (withdrawal_credentials[0] == 0x01) {
+            bool hasNonZero = false;
+            for (uint256 i = 12; i < 32; i++) {
+                if (withdrawal_credentials[i] != 0x00) {
+                    hasNonZero = true;
+                    break;
+                }
+            }
+            require(hasNonZero, "DepositContract: withdrawal to zero address not permitted");
+        }
+
         // Check deposit amount
         require(msg.value >= 1 ether, "DepositContract: deposit value too low");
         require(msg.value % 1 gwei == 0, "DepositContract: deposit value not multiple of gwei");
